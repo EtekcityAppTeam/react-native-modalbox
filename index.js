@@ -404,7 +404,7 @@ var ModalBox = createReactClass({
       return;
     }
 
-    if (this.state.isOpen || this.state.isAnimateOpen) {
+    if (!this.state.isOpen || this.state.isAnimateOpen) {
       this.animateOpen();
     }
 
