@@ -16,7 +16,9 @@ var {
   Modal,
   Keyboard
 } = require('react-native');
-
+let screenHeight = Platform.OS === "ios"
+    ? Dimensions.get("window").height
+    : require("react-native-extra-dimensions-android").get("REAL_WINDOW_HEIGHT");
 var createReactClass = require('create-react-class');
 
 var BackButton = BackHandler || BackAndroid;
@@ -90,21 +92,21 @@ var ModalBox = createReactClass({
   },
 
   getInitialState: function () {
-    var position = this.props.entry === 'top' ? -screen.height : screen.height;
-    return {
-      position: this.props.startOpen ? new Animated.Value(0) : new Animated.Value(position),
-      backdropOpacity: new Animated.Value(0),
-      isOpen: this.props.startOpen,
-      isAnimateClose: false,
-      isAnimateOpen: false,
-      swipeToClose: false,
-      height: screen.height,
-      width: screen.width,
-      containerHeight: screen.height,
-      containerWidth: screen.width,
-      isInitialized: false,
-      keyboardOffset: 0
-    };
+      var position = this.props.entry === 'top' ? -screenHeight : screenHeight;
+      return {
+          position: this.props.startOpen ? new Animated.Value(0) : new Animated.Value(position),
+          backdropOpacity: new Animated.Value(0),
+          isOpen: this.props.startOpen,
+          isAnimateClose: false,
+          isAnimateOpen: false,
+          swipeToClose: false,
+          height: screenHeight,
+          width: screen.width,
+          containerHeight: screenHeight,
+          containerWidth: screen.width,
+          isInitialized: false,
+          keyboardOffset: 0
+      };
   },
 
   onBackPress () {
