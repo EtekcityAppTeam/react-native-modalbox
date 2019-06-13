@@ -10,7 +10,6 @@ var {
   TouchableWithoutFeedback,
   Dimensions,
   Easing,
-  BackAndroid,
   BackHandler,
   Platform,
   Modal,
@@ -21,7 +20,7 @@ let screenHeight = Platform.OS === "ios"
     : require("react-native-extra-dimensions-android").get("REAL_WINDOW_HEIGHT");
 var createReactClass = require('create-react-class');
 
-var BackButton = BackHandler || BackAndroid;
+var BackButton = BackHandler;
 
 var screen = Dimensions.get('window');
 
@@ -87,7 +86,8 @@ var ModalBox = createReactClass({
       backButtonClose: false,
       easing: Easing.elastic(0.8),
       coverScreen: false,
-      keyboardTopOffset: Platform.OS == 'ios' ? 22 : 0
+      keyboardTopOffset: Platform.OS == 'ios' ? 22 : 0,
+      useNativeDriver: true
     };
   },
 
@@ -128,6 +128,7 @@ var ModalBox = createReactClass({
 
   componentWillUnmount: function() {
     if (this.subscriptions) this.subscriptions.forEach((sub) => sub.remove());
+    if (this.props.backButtonClose && Platform.OS === 'android') BackButton.removeEventListener('hardwareBackPress', this.onBackPress);
   },
 
   componentWillReceiveProps: function(props) {
@@ -182,7 +183,7 @@ var ModalBox = createReactClass({
         toValue: 1,
         duration: this.props.animationDuration,
         easing: this.props.easing,
-        useNativeDriver: true,
+        useNativeDriver: this.props.useNativeDriver,
       }
     ).start(() => {
       this.setState({
@@ -207,7 +208,7 @@ var ModalBox = createReactClass({
         toValue: 0,
         duration: this.props.animationDuration,
         easing: this.props.easing,
-        useNativeDriver: true,
+        useNativeDriver: this.props.useNativeDriver,
       }
     ).start(() => {
       this.setState({
@@ -253,7 +254,7 @@ var ModalBox = createReactClass({
             toValue: positionDest,
             duration: this.props.animationDuration,
             easing: this.props.easing,
-            useNativeDriver: true,
+            useNativeDriver: this.props.useNativeDriver,
           }
         ).start(() => {
           this.setState({
@@ -297,7 +298,7 @@ var ModalBox = createReactClass({
           toValue: this.props.entry === 'top' ? -this.state.containerHeight : this.state.containerHeight,
           duration: this.props.animationDuration,
           easing: this.props.easing,
-          useNativeDriver: true,
+          useNativeDriver: this.props.useNativeDriver,
         }
       ).start(() => {
         // Keyboard.dismiss();   // make this optional. Easily user defined in .onClosed() callback
@@ -457,7 +458,7 @@ var ModalBox = createReactClass({
    * Render the component
    */
   render: function() {
-    
+
     var visible = this.state.isOpen || this.state.isAnimateOpen || this.state.isAnimateClose;
 
     if (!visible) return <View/>
